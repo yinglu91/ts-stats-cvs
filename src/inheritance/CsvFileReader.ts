@@ -1,9 +1,11 @@
 import fs from 'fs'  // file system need to npm i @types/node
 
-export class CsvFileReader {
-  data: string[][] = []
+export abstract class CsvFileReader<T> {
+  data: T[] = []
 
   constructor(public filename: string) {}
+
+  abstract mapRow(row: string[]): T;
 
   // Load and Parse
   // [.., [ '28/10/2018', 'Man United', 'Everton', '2', '1', 'H', 'J Moss' ],...]
@@ -15,5 +17,6 @@ export class CsvFileReader {
     .map((row: string): string[] => {
       return row.split(',')
     })
+    .map(this.mapRow)
   }
 }

@@ -1,33 +1,23 @@
 
 import { MatchReader } from './MatchReader'
-import { MatchResult } from './MatchResult'
+import {CsvFileReader} from './CsvFileReader'
+import {ConsoleReport} from './reportTargets/ConsoleReport'
+import {WinsAnalysis} from './analyzers/WinsAnalysis'
+import { Summary } from './Summary'
 
-const reader = new MatchReader('./football.csv')
-reader.read()
+// Create an object that satisfies the DataReader interface
+const csvFileReader = new CsvFileReader('football.csv')
 
-console.log(reader.data[0])
-//  [
-//      2018-08-10T04:00:00.000Z,
-//      'Man United',
-//      'Leicester',
-//      2,
-//      1,
-//      'H',
-//      'A Marriner'
-//    ]
+// Create an instance of MatchReader and pass in something satifiying the DataReader interface
+const matchReader = new MatchReader(csvFileReader)
+matchReader.load()
 
-// Analyze
-let ManUnitedWinds = 0;
-// find: [ '28/10/2018', 'Man United', 'Everton', '2', '1', 'H', 'J Moss' ]
-for (let match of reader.data) {
-  if (match[1] === 'Man United' && match[5] === MatchResult.HomeWin) {
-    ManUnitedWinds++
-  } else if (match[2] === 'Man United' && match[5] === MatchResult.AwayWin) {
-    ManUnitedWinds++
-  }
-}
+// Analyze & Report
+const summary = new Summary(new WinsAnalysis('Man United'), new ConsoleReport())
+summary.buildAndPrintReport(matchReader.matches)
 
-// Report
-console.log(`Man United won ${ManUnitedWinds} games`)
+// Team Man United won 18 games
+
+
 
 // Man United won 18 games
